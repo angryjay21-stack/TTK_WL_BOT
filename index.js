@@ -17,13 +17,13 @@ client.once('ready', () => {
 
 client.on('messageCreate', async (message) => {
 
-    // Ignore bots
+    // Ignore bot messages
     if (message.author.bot) return;
 
     // Accept wl in any format
     if (message.content.toLowerCase() !== 'wl') return;
 
-    // Optional channel lock
+    // Optional specific channel
     if (
         process.env.WL_CHANNEL_ID &&
         message.channel.id !== process.env.WL_CHANNEL_ID
@@ -33,7 +33,7 @@ client.on('messageCreate', async (message) => {
 
         const member = message.member;
 
-        // Find role
+        // Find WL role
         const role =
             message.guild.roles.cache.get(process.env.WL_ROLE_ID) ||
             message.guild.roles.cache.find(
@@ -45,9 +45,15 @@ client.on('messageCreate', async (message) => {
             return;
         }
 
-        // Already has role
+        // If already has role
         if (member.roles.cache.has(role.id)) {
+
             await message.react('✅');
+
+            await message.reply({
+                content: `You already have the ${role.name} Role.`
+            });
+
             return;
         }
 
@@ -59,7 +65,7 @@ client.on('messageCreate', async (message) => {
 
         // Reply message
         await message.reply({
-            content: `You have been given the ${role.name} Role`
+            content: `You have been given the ${role.name} Role.`
         });
 
         console.log(`Gave WL role to ${message.author.tag}`);
